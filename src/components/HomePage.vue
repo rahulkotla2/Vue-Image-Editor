@@ -2,8 +2,9 @@
   <!-- <input type="file" ref="image" @change="uploadImage"> -->
 
   <div class="wrapper">
-    <img :src="imageSrc" alt="Example Image">
-    <div class="drag-container">
+    <img :src="imageSrc" v-if="!isLoading" alt="Example Image">
+     <base-loader v-if="isLoading"></base-loader>
+    <div class="drag-container" v-if="dragDrop">
       <input type="file" class="drag-input" id="file-input" ref="image" @change="uploadImage">
       <label for="file-input" class="drag-label">Drag and drop or click to select a file</label>
     </div>
@@ -18,6 +19,8 @@ export default {
     return {
       imageSrc: myImage,
       imageLoaded: false,
+      isLoading : false,
+      dragDrop : true,
     };
   },
   methods: {
@@ -28,6 +31,7 @@ export default {
       axios.post('http://localhost:5000/upload_image', formData, { responseType: 'arraybuffer' })
         .then(response => {
           console.log(response);
+          this.isLoading = true;
           this.requestImage(); //calling requestImage
         })
         .catch(error => {
@@ -37,18 +41,28 @@ export default {
     requestImage() {
       axios.get('http://127.0.0.1:5000/image').then((response) => {
         this.imageSrc = 'data:image/jpeg;base64,' + response.data.image
+        this.isLoading = false;
         console.log(response)
       });
     }
   },
+  watch : {
+    imageSrc(newval){
+      console.log(newval);
+       if(newval != '../assets/PreviewImg.jpg'){
+          this.dragDrop = false
+       }
+    }
+  }
 }
 </script>
 
-<style>
+<style scoped>
 img {
-  width: 80%;
+  width: 60%;
   height: 500px;
   border-radius: 20px;
+  background-size: cover;
 }
 
 .wrapper {
@@ -59,7 +73,7 @@ img {
   transform: translateX(-50%) translateY(-50%);
   padding: 60px;
   border-radius: 20px;
-  background-color: #2196F3;
+  background-color: #79bef7;
   display: flex;
   flex-direction: column;
   align-items: center;
