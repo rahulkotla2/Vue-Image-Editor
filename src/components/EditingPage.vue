@@ -9,24 +9,25 @@
         <ul>
             <li @click="toggleGeometric"><a href="#" class="geometric"><i class="fas fa-qrcode"></i>Geometric</a>
                 <ul class="Subclass" v-if="transform === 'geometric'">
-                    <li>Transform</li>
-                    <li>Translate</li>
-                    <li>Rotate</li>
+                    <li @click.stop="requestMaking" class="scaling">Transform</li>
+                    <li @click.stop="requestMaking" class="rotation">Rotate</li>
+                    <li @click.stop="requestMaking" class="translation">Translate</li>
                 </ul>
             </li>
             <li @click="toggleGeometric"><a href="#" class="smoothing"><i class="fas fa-link"></i>Image Smoothing</a>
                 <ul class="Subclass" v-if="transform === 'smoothing'">
-                    <li>Averaging</li>
-                    <li>Gaussian</li>
-                    <li>Median</li>
-                    <li>Bilateral</li>
+                    <li @click.stop="requestMaking" class="average">Averaging</li>
+                    <li @click.stop="requestMaking" class="gaussian">Gaussian</li>
+                    <li @click.stop="requestMaking" class="median">Median</li>
+                    <li @click.stop="requestMaking" class="bilateral">Bilateral</li>
                 </ul>
             </li>
             <li @click="toggleGeometric"><a href="#" class="morphological"><i class="fas fa-stream"></i>Morphological</a>
                 <ul class="Subclass" v-if="transform === 'morphological'">
-                    <li>Erosion</li>
-                    <li>Dilation</li>
-                    <li>Opening</li>
+                    <li @click.stop="requestMaking" class="erosion">Erosion</li>
+                    <li @click.stop="requestMaking" class="dilation">Dilation</li>
+                    <li @click.stop="requestMaking" class="opening">Opening</li>
+                    <li @click.stop="requestMaking" class="closing">Closing</li>
                 </ul>
             </li>
             <li @click="toggleGeometric"><a href="#" class="histogram"><i class="fas fa-calendar-week"></i>Histogram</a>
@@ -43,28 +44,39 @@
         </ul>
     </div>
     <section>
-        <img src="../assets/PreviewImg.jpg" alt="">
+        <div>
+            <img :src="imageSrc" alt="">
+        </div>
     </section>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
-            transform : 'geometric',
+            transform: 'geometric',
+            imageSrc: null,
         }
     },
     methods: {
         toggleGeometric(event) {
             if (event.target.tagName == 'A') {
-                if(this.transform === event.target.className){
+                if (this.transform === event.target.className) {
                     // console.dir(event.target.className)
                     this.transform = false;
-                }else{
+                } else {
                     this.transform = event.target.className
                 }
             }
             console.log(this.transform)
+        },
+        requestMaking(event) {
+            const requestName = event.target.className;
+            axios.get(`http://127.0.0.1:5000/${requestName}`).then((response) => {
+                this.imageSrc = 'data:image/jpeg;base64,' + response.data.image
+                console.log(response)
+            });
         }
     }
 }
@@ -180,9 +192,14 @@ section {
     transition: all .5s;
 }
 
-img {
+/* section div {
     width: 1200px;
-    height: 700px;
+    height: 800px;
+} */
+
+img {
+    max-height: 800px;
+    max-width: 1200px;
 }
 
 .Subclass li {
@@ -193,7 +210,7 @@ img {
     transition: all 0.2s ease-in;
 }
 
-.Subclass li:hover{
+.Subclass li:hover {
     transform: translateX(90px);
 }
 </style>
