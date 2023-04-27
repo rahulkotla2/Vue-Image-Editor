@@ -5,37 +5,49 @@
         <i class="fas fa-times" id="cancel"></i>
     </label>
     <div class="sidebar">
-        <header>My App</header>
+        <header>Image Editor</header>
         <ul>
-            <li @click="toggleGeometric"><a href="#" class="geometric"><i class="fas fa-qrcode"></i>Geometric</a>
-                <ul class="Subclass" v-if="transform === 'geometric'">
-                    <li @click.stop="requestMaking" class="scaling">Transform</li>
-                    <li @click.stop="requestMaking" class="rotation">Rotate</li>
-                    <li @click.stop="requestMaking" class="translation">Translate</li>
-                </ul>
+            <li @click="toggleGeometric"><a href="#" class="geometric"><i class="fas fa-qrcode"></i>Geometric<i
+                        class="fa-solid fa-angle-down" :class="toggleArrow('geometric')"></i></a>
+                <transition>
+                    <ul class="Subclass" v-if="transform === 'geometric'">
+                        <li @click.stop="requestMaking" class="scaling">Transform</li>
+                        <li @click.stop="requestMaking" class="rotation">Rotate</li>
+                        <li @click.stop="requestMaking" class="translation">Translate</li>
+                    </ul>
+                </transition>
             </li>
-            <li @click="toggleGeometric"><a href="#" class="smoothing"><i class="fas fa-link"></i>Image Smoothing</a>
-                <ul class="Subclass" v-if="transform === 'smoothing'">
-                    <li @click.stop="requestMaking" class="average">Averaging</li>
-                    <li @click.stop="requestMaking" class="gaussian">Gaussian</li>
-                    <li @click.stop="requestMaking" class="median">Median</li>
-                    <li @click.stop="requestMaking" class="bilateral">Bilateral</li>
-                </ul>
+            <li @click="toggleGeometric"><a href="#" class="smoothing"><i class="fas fa-link"></i>Image Smoothing<i
+                        class="fa-solid fa-angle-down" :class="toggleArrow('smoothing')"></i></a>
+                <transition>
+                    <ul class="Subclass" v-if="transform === 'smoothing'">
+                        <li @click.stop="requestMaking" class="average">Averaging</li>
+                        <li @click.stop="requestMaking" class="gaussian">Gaussian</li>
+                        <li @click.stop="requestMaking" class="median">Median</li>
+                        <li @click.stop="requestMaking" class="bilateral">Bilateral</li>
+                    </ul>
+                </transition>
             </li>
-            <li @click="toggleGeometric"><a href="#" class="morphological"><i class="fas fa-stream"></i>Morphological</a>
-                <ul class="Subclass" v-if="transform === 'morphological'">
-                    <li @click.stop="requestMaking" class="erosion">Erosion</li>
-                    <li @click.stop="requestMaking" class="dilation">Dilation</li>
-                    <li @click.stop="requestMaking" class="opening">Opening</li>
-                    <li @click.stop="requestMaking" class="closing">Closing</li>
-                </ul>
+            <li @click="toggleGeometric"><a href="#" class="morphological"><i class="fas fa-stream"></i>Morphological<i
+                        class="fa-solid fa-angle-down" :class="toggleArrow('morphological')"></i></a>
+                <transition>
+                    <ul class="Subclass" v-if="transform === 'morphological'">
+                        <li @click.stop="requestMaking" class="erosion">Erosion</li>
+                        <li @click.stop="requestMaking" class="dilation">Dilation</li>
+                        <li @click.stop="requestMaking" class="opening">Opening</li>
+                        <li @click.stop="requestMaking" class="closing">Closing</li>
+                    </ul>
+                </transition>
             </li>
-            <li @click="toggleGeometric"><a href="#" class="histogram"><i class="fas fa-calendar-week"></i>Histogram</a>
-                <ul class="Subclass" v-if="transform === 'histogram'">
-                    <li>Histogram</li>
-                    <li>Eqalising</li>
-                    <li>Thresholding</li>
-                </ul>
+            <li @click="toggleGeometric"><a href="#" class="histogram"><i class="fas fa-calendar-week"></i>Histogram<i
+                        class="fa-solid fa-angle-down" :class="toggleArrow('histogram')"></i></a>
+                <transition>
+                    <ul class="Subclass" v-if="transform === 'histogram'">
+                        <li @click.stop="requestMaking" class="histogram">Histogram</li>
+                        <li @click.stop="requestMaking" class="equalize">Eqalising</li>
+                        <li @click.stop="requestMaking" class="threshold">Thresholding</li>
+                    </ul>
+                </transition>
             </li>
             <li><a href="#"><i class="fas fa-calendar-week"></i>Events</a></li>
             <li><a href="#"><i class="far fa-question-circle"></i>About</a></li>
@@ -45,7 +57,8 @@
     </div>
     <section>
         <div>
-            <img :src="imageSrc" alt="">
+            <base-loader v-if="isLoading"></base-loader>
+            <img :src="imageSrc" alt="" v-else>
         </div>
     </section>
 </template>
@@ -57,6 +70,7 @@ export default {
         return {
             transform: 'geometric',
             imageSrc: null,
+            isLoading: false,
         }
     },
     methods: {
@@ -73,11 +87,24 @@ export default {
         },
         requestMaking(event) {
             const requestName = event.target.className;
-            axios.get(`http://127.0.0.1:5000/${requestName}`).then((response) => {
-                this.imageSrc = 'data:image/jpeg;base64,' + response.data.image
-                console.log(response)
-            });
+            this.isLoading = true,
+                axios.get(`http://127.0.0.1:5000/${requestName}`).then((response) => {
+                    this.imageSrc = 'data:image/jpeg;base64,' + response.data.image
+                    console.log(response)
+                    this.isLoading = false;
+                });
+        },
+        toggleArrow(value) {
+            return this.transform === value ? 'active' : false
         }
+    },
+    created() {
+        this.isLoading = true;
+        axios.get(`http://127.0.0.1:5000/image`).then((response) => {
+            this.imageSrc = 'data:image/jpeg;base64,' + response.data.image
+            console.log(response);
+            this.isLoading = false;
+        });
     }
 }
 </script>
@@ -93,6 +120,10 @@ export default {
     font-family: 'Nunito', sans-serif;
 }
 
+.active {
+    transform: rotate(180deg);
+}
+
 .sidebar {
     position: fixed;
     left: -400px;
@@ -104,7 +135,7 @@ export default {
 }
 
 .sidebar header {
-    font-size: 22px;
+    font-size: 30px;
     color: white;
     line-height: 70px;
     text-align: center;
@@ -127,11 +158,19 @@ export default {
 }
 
 ul li:hover a {
+    position: relative;
     padding-left: 50px;
 }
 
-.sidebar ul a i {
+.sidebar ul a .fas {
     margin-right: 16px;
+}
+
+.sidebar ul a .fa-solid {
+    position: absolute;
+    margin-top: 20px;
+    right: 50px;
+    transition: all 0.3s ease-in;
 }
 
 #check {
@@ -198,19 +237,37 @@ section {
 } */
 
 img {
-    max-height: 800px;
-    max-width: 1200px;
+    max-height: 900px;
+    max-width: 1400px;
 }
 
 .Subclass li {
     font-size: 25px;
     color: white;
     transform: translateX(80px);
-    margin: 5px;
+    margin: 10px;
     transition: all 0.2s ease-in;
 }
 
 .Subclass li:hover {
     transform: translateX(90px);
+}
+
+/* Vue Transition */
+.v-enter-active,
+.v-leave-active {
+    transition: all 0.3s ease-in;
+}
+
+.v-enter-from,
+.v-leave-to {
+    transform: translateY(-50px);
+    opacity: 0
+}
+
+.v-enter-to,
+.v-leave-from {
+    transform: translateY(0);
+    opacity: 1;
 }
 </style>
