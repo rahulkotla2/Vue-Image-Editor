@@ -7,15 +7,35 @@
     <div class="sidebar">
         <header>My App</header>
         <ul>
-            <li @click="toggleGeometric"><a href="#"><i class="fas fa-qrcode geometric"></i>Geometric</a>
-                <ul class="Subclass" v-if="geometric">
+            <li @click="toggleGeometric"><a href="#" class="geometric"><i class="fas fa-qrcode"></i>Geometric</a>
+                <ul class="Subclass" v-if="transform === 'geometric'">
                     <li>Transform</li>
                     <li>Translate</li>
                     <li>Rotate</li>
                 </ul>
             </li>
-            <li><a href="#"><i class="fas fa-link"></i>Shortcuts</a></li>
-            <li><a href="#"><i class="fas fa-stream"></i>Overview</a></li>
+            <li @click="toggleGeometric"><a href="#" class="smoothing"><i class="fas fa-link"></i>Image Smoothing</a>
+                <ul class="Subclass" v-if="transform === 'smoothing'">
+                    <li>Averaging</li>
+                    <li>Gaussian</li>
+                    <li>Median</li>
+                    <li>Bilateral</li>
+                </ul>
+            </li>
+            <li @click="toggleGeometric"><a href="#" class="morphological"><i class="fas fa-stream"></i>Morphological</a>
+                <ul class="Subclass" v-if="transform === 'morphological'">
+                    <li>Erosion</li>
+                    <li>Dilation</li>
+                    <li>Opening</li>
+                </ul>
+            </li>
+            <li @click="toggleGeometric"><a href="#" class="histogram"><i class="fas fa-calendar-week"></i>Histogram</a>
+                <ul class="Subclass" v-if="transform === 'histogram'">
+                    <li>Histogram</li>
+                    <li>Eqalising</li>
+                    <li>Thresholding</li>
+                </ul>
+            </li>
             <li><a href="#"><i class="fas fa-calendar-week"></i>Events</a></li>
             <li><a href="#"><i class="far fa-question-circle"></i>About</a></li>
             <li><a href="#"><i class="fas fa-sliders-h"></i>Services</a></li>
@@ -31,15 +51,20 @@
 export default {
     data() {
         return {
-            geometric: true,
+            transform : 'geometric',
         }
     },
     methods: {
         toggleGeometric(event) {
-            console.log(event.target.tagName)
             if (event.target.tagName == 'A') {
-                this.geometric = !this.geometric;
+                if(this.transform === event.target.className){
+                    // console.dir(event.target.className)
+                    this.transform = false;
+                }else{
+                    this.transform = event.target.className
+                }
             }
+            console.log(this.transform)
         }
     }
 }
@@ -161,7 +186,7 @@ img {
 }
 
 .Subclass li {
-    font-size: 20px;
+    font-size: 25px;
     color: white;
     transform: translateX(80px);
     margin: 5px;
