@@ -11,7 +11,6 @@ export default {
     inject: ['downloadClick'],
     methods: {
         downloadImage(img) {
-            console.dir(img,'heelo')
             var canvas = document.createElement('canvas');
             canvas.width = img.width;
             canvas.height = img.height;
