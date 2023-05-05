@@ -5,7 +5,10 @@ import ThresHold from './components/ThresHold.vue'
 import BaseTransform from './components/Geomteric/BaseTransform.vue'
 import BaseLoader from './components/BaseLoader.vue'
 import EditingPage from './components/EditingPage';
+import ProceedBtn from './components/ProceedBtn.vue'
+import DownloadBtn from './components/DownloadButton.vue'
 import App from './App.vue'
+
 
 // Font Awesome
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -16,9 +19,10 @@ library.add(faCoffee)
 
 const app = createApp(App);
 
-app.component('font-awesome-icon', FontAwesomeIcon)
-
-app.component('base-loader', BaseLoader)
+app.component('font-awesome-icon', FontAwesomeIcon);
+app.component('proceed-btn', ProceedBtn);
+app.component('base-loader', BaseLoader);
+app.component('download-btn', DownloadBtn);
 const router = createRouter({
     history: createWebHistory(),
     routes: [
