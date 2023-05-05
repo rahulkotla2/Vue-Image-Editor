@@ -3,24 +3,34 @@
 
   <div class="wrapper">
     <img :src="imageSrc" v-if="!isLoading" alt="Example Image">
-     <base-loader v-if="isLoading"></base-loader>
+    <base-loader v-if="isLoading"></base-loader>
     <div class="drag-container" v-if="dragDrop">
       <input type="file" class="drag-input" id="file-input" ref="image" @change="uploadImage">
       <label for="file-input" class="drag-label">Drag and drop or click to select a file</label>
     </div>
+    <proceed-btn v-if="!dragDrop"></proceed-btn>
   </div>
 </template>
 
 <script>
 import myImage from '../assets/PreviewImg.jpg'
 import axios from 'axios'
-export default {
+export default  {
+  provide() {
+    return {
+      removeSrc() {
+        location.reload();
+        this.imageSrc = myImage;
+        console.log(this.imageSrc);
+      }
+    }
+  },
   data() {
     return {
       imageSrc: myImage,
       imageLoaded: false,
-      isLoading : false,
-      dragDrop : true,
+      isLoading: false,
+      dragDrop: true,
     };
   },
   methods: {
@@ -39,19 +49,19 @@ export default {
         });
     },
     requestImage() {
-      axios.get('http://127.0.0.1:5000/image').then((response) => {
+      axios.get('http://127.0.0.1:5000/color').then((response) => {
         this.imageSrc = 'data:image/jpeg;base64,' + response.data.image
         this.isLoading = false;
         console.log(response)
       });
     }
   },
-  watch : {
-    imageSrc(newval){
+  watch: {
+    imageSrc(newval) {
       console.log(newval);
-       if(newval != '../assets/PreviewImg.jpg'){
-          this.dragDrop = false
-       }
+      if (newval != '../assets/PreviewImg.jpg') {
+        this.dragDrop = false
+      }
     }
   }
 }
@@ -59,8 +69,8 @@ export default {
 
 <style scoped>
 img {
-  width: 60%;
-  height: 500px;
+  width: 65%;
+  height: 550px;
   border-radius: 20px;
   background-size: cover;
 }
